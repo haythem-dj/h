@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+// ===== Dunamic Array =====
+
 #define H_DA_INIT_CAPACITY 10
 #define H_DA_CAPACITY_FACTOR 2
 
@@ -59,6 +61,8 @@ typedef struct
         free(h_da_header((arr)));                                                                                      \
         (arr) = NULL;                                                                                                  \
     } while (0)
+
+// ===== Linked List =====
 
 #define H_Linked_List(T)                                                                                               \
     struct                                                                                                             \
@@ -139,6 +143,110 @@ typedef struct
             free(ll);                                                                                                  \
             ll = cur;                                                                                                  \
         }                                                                                                              \
+    } while (0)
+
+// ===== Hash Table =====
+
+#define H_HT_TABLE_SIZE 64
+
+uint32_t hash(const char* key)
+{
+    uint32_t h = 5381;
+    while (*key) h = h * 33 ^ (uint32_t)*key++;
+    return h % H_HT_TABLE_SIZE;
+}
+
+#define H_Hash_Table(T)                                                                                                \
+    struct Entry_##T                                                                                                   \
+    {                                                                                                                  \
+        char* key;                                                                                                     \
+        T value;                                                                                                       \
+        struct Entry_##T* next;                                                                                        \
+    }**
+
+#define h_ht_insert(ht, k, v)                                                                                          \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if ((ht) == NULL)                                                                                              \
+        {                                                                                                              \
+            (ht) = calloc(H_HT_TABLE_SIZE, sizeof(*(ht)));                                                             \
+            if (!(ht))                                                                                                 \
+            {                                                                                                          \
+                perror("calloc failed.");                                                                              \
+                exit(EXIT_FAILURE);                                                                                    \
+            }                                                                                                          \
+        }                                                                                                              \
+        uint32_t index = hash(k);                                                                                      \
+        __typeof__(*(ht)) e = ht[index];                                                                               \
+        while (e)                                                                                                      \
+        {                                                                                                              \
+            if (strcmp(e->key, (k)) == 0)                                                                              \
+            {                                                                                                          \
+                e->value = v;                                                                                          \
+                break;                                                                                                 \
+            }                                                                                                          \
+            e = e->next;                                                                                               \
+        }                                                                                                              \
+        if (!e)                                                                                                        \
+        {                                                                                                              \
+            __typeof__(*(ht)) entry = malloc(sizeof(*entry));                                                          \
+            entry->key = strdup(k);                                                                                    \
+            entry->value = (v);                                                                                        \
+            entry->next = (ht)[index];                                                                                 \
+            (ht)[index] = entry;                                                                                       \
+        }                                                                                                              \
+    } while (0)
+
+#define h_ht_get(ht, k)                                                                                                \
+    ({                                                                                                                 \
+        uint32_t index = hash(k);                                                                                      \
+        __typeof__(*(ht)) e = (ht)[index];                                                                             \
+        while (e)                                                                                                      \
+        {                                                                                                              \
+            if (strcmp(e->key, (k)) == 0) break;                                                                       \
+            e = e->next;                                                                                               \
+        }                                                                                                              \
+        e ? &e->value : NULL;                                                                                          \
+    })
+
+#define h_ht_delete(ht, k)                                                                                             \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        uint32_t index = hash(k);                                                                                      \
+        __typeof__(*(ht)) e = (ht)[index];                                                                             \
+        __typeof__(*(ht)) prv = NULL;                                                                                  \
+        while (e)                                                                                                      \
+        {                                                                                                              \
+            if (strcmp(e->key, (k)) == 0)                                                                              \
+            {                                                                                                          \
+                if (prv == NULL) (ht)[index] = e->next;                                                                \
+                else                                                                                                   \
+                    prv->next = e->next;                                                                               \
+                free(e->key);                                                                                          \
+                free(e);                                                                                               \
+                break;                                                                                                 \
+            }                                                                                                          \
+            prv = e;                                                                                                   \
+            e = e->next;                                                                                               \
+        }                                                                                                              \
+    } while (0)
+
+#define h_ht_free(ht)                                                                                                  \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        for (size_t i = 0; i < H_HT_TABLE_SIZE; i++)                                                                   \
+        {                                                                                                              \
+            __typeof__(*(ht)) e = (ht)[i];                                                                             \
+            while (e)                                                                                                  \
+            {                                                                                                          \
+                __typeof__(*(ht)) dead = e;                                                                            \
+                e = e->next;                                                                                           \
+                free(dead->key);                                                                                       \
+                free(dead);                                                                                            \
+            }                                                                                                          \
+        }                                                                                                              \
+        free(ht);                                                                                                      \
+        (ht) = NULL;                                                                                                   \
     } while (0)
 
 #endif
