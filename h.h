@@ -1,6 +1,11 @@
 #ifndef H_H_
 #define H_H_
 
+#define H_VERSION_MAJOR 0
+#define H_VERSION_MINOR 1
+#define H_VERSION_PATCH 0
+#define H_VERSION_STRING "0.1.0"
+
 #include <stdlib.h>
 
 // ===== Dunamic Array =====
