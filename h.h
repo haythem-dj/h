@@ -170,18 +170,21 @@ uint32_t h_hash(const char* key)
         struct Entry_##T* next;                                                                                        \
     }**
 
+#define h_ht_init(ht)                                                                                                  \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        (ht) = calloc(H_HT_TABLE_SIZE, sizeof(*(ht)));                                                                 \
+        if (!(ht))                                                                                                     \
+        {                                                                                                              \
+            perror("calloc failed.");                                                                                  \
+            exit(EXIT_FAILURE);                                                                                        \
+        }                                                                                                              \
+    } while (0)
+
 #define h_ht_insert(ht, k, v)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
-        if ((ht) == NULL)                                                                                              \
-        {                                                                                                              \
-            (ht) = calloc(H_HT_TABLE_SIZE, sizeof(*(ht)));                                                             \
-            if (!(ht))                                                                                                 \
-            {                                                                                                          \
-                perror("calloc failed.");                                                                              \
-                exit(EXIT_FAILURE);                                                                                    \
-            }                                                                                                          \
-        }                                                                                                              \
+        if ((ht) == NULL) h_ht_init(ht);                                                                               \
         uint32_t index = h_hash(k);                                                                                    \
         __typeof__(*(ht)) e = ht[index];                                                                               \
         while (e)                                                                                                      \
