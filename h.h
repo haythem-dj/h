@@ -3,12 +3,13 @@
 
 #define H_VERSION_MAJOR 0
 #define H_VERSION_MINOR 1
-#define H_VERSION_PATCH 0
-#define H_VERSION_STRING "0.1.0"
+#define H_VERSION_PATCH 1
+#define H_VERSION_STRING "0.1.1"
 
+#include <stdint.h>
 #include <stdlib.h>
 
-// ===== Dunamic Array =====
+// ===== Dynamic Array =====
 
 #define H_DA_INIT_CAPACITY 10
 #define H_DA_CAPACITY_FACTOR 2
@@ -154,7 +155,7 @@ typedef struct
 
 #define H_HT_TABLE_SIZE 64
 
-uint32_t hash(const char* key)
+uint32_t h_hash(const char* key)
 {
     uint32_t h = 5381;
     while (*key) h = h * 33 ^ (uint32_t)*key++;
@@ -181,7 +182,7 @@ uint32_t hash(const char* key)
                 exit(EXIT_FAILURE);                                                                                    \
             }                                                                                                          \
         }                                                                                                              \
-        uint32_t index = hash(k);                                                                                      \
+        uint32_t index = h_hash(k);                                                                                    \
         __typeof__(*(ht)) e = ht[index];                                                                               \
         while (e)                                                                                                      \
         {                                                                                                              \
@@ -204,7 +205,7 @@ uint32_t hash(const char* key)
 
 #define h_ht_get(ht, k)                                                                                                \
     ({                                                                                                                 \
-        uint32_t index = hash(k);                                                                                      \
+        uint32_t index = h_hash(k);                                                                                    \
         __typeof__(*(ht)) e = (ht)[index];                                                                             \
         while (e)                                                                                                      \
         {                                                                                                              \
@@ -217,7 +218,7 @@ uint32_t hash(const char* key)
 #define h_ht_delete(ht, k)                                                                                             \
     do                                                                                                                 \
     {                                                                                                                  \
-        uint32_t index = hash(k);                                                                                      \
+        uint32_t index = h_hash(k);                                                                                    \
         __typeof__(*(ht)) e = (ht)[index];                                                                             \
         __typeof__(*(ht)) prv = NULL;                                                                                  \
         while (e)                                                                                                      \
