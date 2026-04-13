@@ -3,10 +3,11 @@
 
 #define H_VERSION_MAJOR 0
 #define H_VERSION_MINOR 1
-#define H_VERSION_PATCH 1
-#define H_VERSION_STRING "0.1.1"
+#define H_VERSION_PATCH 2
+#define H_VERSION_STRING "0.1.2"
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 // ===== Dynamic Array =====
@@ -162,12 +163,12 @@ uint32_t h_hash(const char* key)
     return h % H_HT_TABLE_SIZE;
 }
 
-#define H_Hash_Table(T)                                                                                                \
-    struct Entry_##T                                                                                                   \
+#define H_Hash_Table(T, name)                                                                                          \
+    struct Entry_##name                                                                                                \
     {                                                                                                                  \
         char* key;                                                                                                     \
         T value;                                                                                                       \
-        struct Entry_##T* next;                                                                                        \
+        struct Entry_##name* next;                                                                                     \
     }**
 
 #define h_ht_init(ht)                                                                                                  \
